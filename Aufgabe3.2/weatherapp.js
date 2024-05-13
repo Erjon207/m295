@@ -1,17 +1,16 @@
 const request = require('request');
-const url = 'https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail?plz='
-let postalcode = '861000';
 
 const express = require('express');
 const app = express();
 const port = 3000;
 
-app.get('/', (request, res) => {
+app.get('/:plz', (request, res) => {
+    let plz = request.params.plz
     function getWeather1() {
-        fetch(url + postalcode)
+        fetch(`https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail?plz=${plz}00`)
             .then(response => response.json())
             .then(data => {
-                res.send(data.currentWeather);
+                res.send(data.currentWeather.temperature.toString());
             })
             .catch(error => console.error('Error:', error));
     }
