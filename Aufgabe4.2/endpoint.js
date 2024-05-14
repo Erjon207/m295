@@ -31,8 +31,6 @@ let me = {
     "alter" : 17
 }   
 
-app.use(express.json());
-
 app.get('/now', (request, response) => {
     var currentdate = new Date();
     response.send(currentdate.toLocaleString('de-CH', { timeZone: request.query.tz }))
@@ -64,6 +62,8 @@ app.get('/chuck', (request, response) => {
         .then((response) => response.json())
         .then((json) => response.send(json.value.toString()));
 });
+
+app.use(express.json());
 
 app.get('/me', (request, response) => {
     response.send(me)
