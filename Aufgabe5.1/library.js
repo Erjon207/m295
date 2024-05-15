@@ -14,24 +14,6 @@ let books = [
         "title": "Der goldene Kompass",
         "author": "Philip Pullman",
         "year": 1995
-    },
-    {
-        "isbn": "978-0439358071",
-        "title": "Harry Potter and the Philosopher's Stone",
-        "author": "J.K. Rowling",
-        "year": 1997
-    },
-    {
-        "isbn": "978-0140283330",
-        "title": "The Hobbit",
-        "author": "J.R.R. Tolkien",
-        "year": 1937
-    },
-    {
-        "isbn": "978-0345339706",
-        "title": "The Hitchhiker's Guide to the Galaxy",
-        "author": "Douglas Adams",
-        "year": 1979
     }
 ]
 
@@ -54,19 +36,27 @@ app.post('/books', (request, response) => {
     response.send(request.body);
 });
 
-app.put('/books/:isbn', (request, response) => {
-    books = books.map((book) => { 
-        if (book.isbn === request.params.isbn) { 
-            book = request.body 
-        } 
-    })
-    response.send(request.body);
+app.put("/books/:isbn", (request, result) => {
+    books = books.map((book) => book.isbn === request.params.isbn ? request.body : book)
+    result.send(request.body)
 });
 
-app.delete('/books', (request, response) => {
-
-
+app.delete('/books/:isbn', (request, response) => {
+    books.splice(books.findIndex((book) => book.isbn === request.params.isbn), 1);
     response.send(books);
+});
+
+app.patch("/books/:isbn", (request, result) => {
+    let i = books.findIndex((book) => book.isbn === request.params.isbn);
+    if (request.query.category === "title"){
+        books[i].title = request.query.value 
+    } else if (request.query.category === "author") {
+        books[i].author = request.query.value 
+    } else if (request.query.category === "year") {
+        books[i].year = request.query.value 
+    }
+
+    result.send(books[i])
 });
 
 app.listen(port, () => {
