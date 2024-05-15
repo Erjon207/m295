@@ -22,23 +22,23 @@ app.get('/books', (request, response) => {
 });
 
 app.get('/books/:isbn', (request, response) => {
-    function getByIsbn(value, index, array) {
-        return value.isbn == request.params.isbn
-    }
-
-    response.send(books.find(getByIsbn));
+    response.send(books.findIndex[(book) => book.isbn === request.params.isbn]);
 });
 
 app.use(express.json());
 
 app.post('/books', (request, response) => {
-    books.push(request.body);
-    response.send(request.body);
+    if (request.body.isbn && request.body.title && request.body.author && request.body.year) {
+        books.push(request.body);
+        response.send(request.body);
+    } else response.sendStatus(422)
 });
 
 app.put("/books/:isbn", (request, result) => {
-    books = books.map((book) => book.isbn === request.params.isbn ? request.body : book)
-    result.send(request.body)
+    if (request.body.isbn && request.body.title && request.body.author && request.body.year) {
+        books = books.map((book) => book.isbn === request.params.isbn ? request.body : book)
+        result.send(request.body)
+    } else response.sendStatus(422)
 });
 
 app.delete('/books/:isbn', (request, response) => {
@@ -48,15 +48,18 @@ app.delete('/books/:isbn', (request, response) => {
 
 app.patch("/books/:isbn", (request, result) => {
     let i = books.findIndex((book) => book.isbn === request.params.isbn);
-    if (request.query.category === "title"){
-        books[i].title = request.query.value 
-    } else if (request.query.category === "author") {
-        books[i].author = request.query.value 
-    } else if (request.query.category === "year") {
-        books[i].year = request.query.value 
-    }
 
-    result.send(books[i])
+    if (request.query.value) {
+        if (request.query.category === "title") {
+            books[i].title = request.query.value
+        } else if (request.query.category === "author") {
+            books[i].author = request.query.value
+        } else if (request.query.category === "year") {
+            books[i].year = request.query.value
+        }
+    
+        result.send(books[i])
+    } else response.sendStatus(422)
 });
 
 app.listen(port, () => {
